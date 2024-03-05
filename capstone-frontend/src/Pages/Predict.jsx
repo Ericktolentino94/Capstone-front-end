@@ -12,6 +12,7 @@ const Predict = () => {
     const [allPlayerData, setAllPlayerData] = useState([]);
     const [allTeamData, setAllTeamData] = useState([]);
     const [loadingAllData, setLoadingAllData] = useState(true);
+    const [combinedData, setCombinedData] = useState([]);
 
     const seasonsGPT = ["2023", "2022", "2021", "2020"];
     const teamsGPT = ["1", "2", "4", "5", "6", "7", "8", "9", "10", "11", "14", "15", "16", "17", "19",
@@ -72,7 +73,7 @@ const Predict = () => {
                     console.error(error);
                 }
             }
-            setAllTeamData(data[0]); // Set the first element of data
+            setAllTeamData(data);
         }
         getData()
     }, [])
@@ -83,28 +84,20 @@ const Predict = () => {
 
     useEffect(() => {
         console.log("All Team Data:", allTeamData);
-    }, [allTeamData]); // Dependency on allTeamData
+        if (allPlayerData.length > 0 && allTeamData.length > 0) {
+            const combined = [...allPlayerData, ...allTeamData];
+            setCombinedData(combined);
+            setLoadingAllData(false);
+        }
+    }, [allPlayerData, allTeamData]);
 
-    const handleDownloadAllData = () => {
-        const json = JSON.stringify(allPlayerData, null, 2); // Changed to allPlayerData
+    const handleDownloadCombinedData = () => {
+        const json = JSON.stringify(combinedData, null, 2);
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'allPlayerData.json';
-        document.body.appendChild(a);
-        a.click();
-        URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-    };
-
-    const handleDownloadAllTeamData = () => {
-        const json = JSON.stringify(allTeamData, null, 2);
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'allTeamData.json';
+        a.download = 'combinedData.json';
         document.body.appendChild(a);
         a.click();
         URL.revokeObjectURL(url);
@@ -114,11 +107,8 @@ const Predict = () => {
     return (
         <div>
             <h2>Testing...</h2>
-            <button onClick={handleDownloadAllData} disabled={loadingAllData}>
-                {loadingAllData ? "Downloading All Player Data..." : "Download All Player Data"}
-            </button>
-            <button onClick={handleDownloadAllTeamData} disabled={loadingAllData}>
-                {loadingAllData ? "Downloading All Team Data..." : "Download All Team Data"}
+            <button onClick={handleDownloadCombinedData} disabled={loadingAllData || !combinedData.length}>
+                {loadingAllData ? "Downloading Combined Data..." : "Download Combined Data"}
             </button>
         </div>
     );
