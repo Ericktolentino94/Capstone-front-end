@@ -90,6 +90,9 @@ export default function NavBar({ currentUser, setCurrentUser, photoURL }) {
         if(item.label === "Search")
         navigate('/Search');
 
+        if(item.label === "Prop Predictor")
+        navigate('/predict');
+
     }
 
     function handleUserItemSelect(item) {
