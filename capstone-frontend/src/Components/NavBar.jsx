@@ -60,6 +60,10 @@ export default function NavBar({ currentUser, setCurrentUser, photoURL }) {
             icon: Blank,
             label: 'Prop Predictor',
         },
+        {
+            icon: Blank,
+            label: 'get data 2',
+        },
     ]);
 
     const [userItems, setUserItems] = React.useState([
@@ -92,6 +96,9 @@ export default function NavBar({ currentUser, setCurrentUser, photoURL }) {
 
         if(item.label === "Prop Predictor")
         navigate('/predict');
+
+        if(item.label === "get data 2")
+        navigate('/getdata2');
 
     }
 

@@ -41,6 +41,7 @@ import TeamStandings from "./Pages/TeamStandings.jsx";
 import TeamStandingsV2 from "./Pages/TeamStandingsV2.jsx";
 import PlayerStats from "./Components/PlayerStatsE.jsx";
 import Predict from "./Pages/Predict.jsx";
+import GetData2 from "./Pages/GetData2.jsx";
 
 import PlayerStatsTableVariation from "./Pages/PlayerStatsTableVariation.jsx"
 
@@ -228,6 +229,15 @@ function App() {
                   path="/predict"
                   element={
                     <Predict
+                      currentUser={currentUser}
+                      setCurrentUser={setCurrentUser}
+                    />
+                  }
+                />
+                <Route
+                  path="/getdata2"
+                  element={
+                    <GetData2
                       currentUser={currentUser}
                       setCurrentUser={setCurrentUser}
                     />

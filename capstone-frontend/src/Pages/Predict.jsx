@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const VITE_X_RAPIDAPI_KEY2 = import.meta.env.VITE_X_RAPIDAPI_KEY2;
@@ -11,8 +12,8 @@ const VITE_X_RAPIDAPI_URL = import.meta.env.VITE_X_RAPIDAPI_URL;
 const Predict = () => {
     const [allPlayerData, setAllPlayerData] = useState([]);
     const [allTeamData, setAllTeamData] = useState([]);
+    const [ids, setAllIds] = useState([]);
     const [loadingAllData, setLoadingAllData] = useState(true);
-    const [combinedData, setCombinedData] = useState([]);
 
     const seasonsGPT = ["2023", "2022", "2021", "2020"];
     const teamsGPT = ["1", "2", "4", "5", "6", "7", "8", "9", "10", "11", "14", "15", "16", "17", "19",
@@ -21,6 +22,7 @@ const Predict = () => {
     useEffect(() => {
         const fetchAllPlayerStats = async () => {
             const data = [];
+            const ids = []
             for (let i = 0; i < seasonsGPT.length; i++) {
                 for (let j = 0; j < teamsGPT.length; j++) {
                     try {
@@ -37,11 +39,13 @@ const Predict = () => {
                             }
                         });
                         data.push(response.data);
+                        ids.push(...response.data.response.map(e => e.id))
                     } catch (error) {
                         console.error(error);
                     }
                 }
             }
+            setAllIds(ids)
             setAllPlayerData(data);
             setLoadingAllData(false);
         };
@@ -73,31 +77,53 @@ const Predict = () => {
                     console.error(error);
                 }
             }
-            setAllTeamData(data);
+            setAllTeamData(data[0]); // Set the first element of data
         }
         getData()
     }, [])
 
     useEffect(() => {
         console.log("All Player Data:", allPlayerData);
+        console.log("All ids Data:", ids);
     }, [allPlayerData]); // Dependency on allPlayerData
 
     useEffect(() => {
         console.log("All Team Data:", allTeamData);
-        if (allPlayerData.length > 0 && allTeamData.length > 0) {
-            const combined = [...allPlayerData, ...allTeamData];
-            setCombinedData(combined);
-            setLoadingAllData(false);
-        }
-    }, [allPlayerData, allTeamData]);
+    }, [allTeamData]); // Dependency on allTeamData
 
-    const handleDownloadCombinedData = () => {
-        const json = JSON.stringify(combinedData, null, 2);
+    const handleDownloadAllPlayerData = () => {
+        const json = JSON.stringify(allPlayerData, null, 2); // Changed to allPlayerData
         const blob = new Blob([json], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'combinedData.json';
+        a.download = 'allPlayerData.json';
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    };
+
+    const handleDownloadAllTeamData = () => {
+        const json = JSON.stringify(allTeamData, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'allTeamData.json';
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    };
+
+    const handleDownloadIds = () => {
+        const json = JSON.stringify(ids, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ids.json';
         document.body.appendChild(a);
         a.click();
         URL.revokeObjectURL(url);
@@ -107,9 +133,16 @@ const Predict = () => {
     return (
         <div>
             <h2>Testing...</h2>
-            <button onClick={handleDownloadCombinedData} disabled={loadingAllData || !combinedData.length}>
-                {loadingAllData ? "Downloading Combined Data..." : "Download Combined Data"}
+            <button onClick={handleDownloadAllPlayerData} disabled={loadingAllData}>
+                {loadingAllData ? "Downloading All Player Data..." : "Download All Player Data"}
             </button>
+            <button onClick={handleDownloadAllTeamData} disabled={loadingAllData}>
+                {loadingAllData ? "Downloading All Team Data..." : "Download All Team Data"}
+            </button>
+            <button onClick={handleDownloadIds} disabled={loadingAllData}>
+                {loadingAllData ? "Downloading IDs..." : "Download IDs"}
+            </button>
+            <Link to={`/getdata2`} state={ids} >Get Rest Of Data</Link>
         </div>
     );
 };
