@@ -9,10 +9,11 @@ const VITE_X_RAPIDAPI_HOST2 = import.meta.env.VITE_X_RAPIDAPI_HOST2;
 const VITE_X_RAPIDAPI_URL3 = import.meta.env.VITE_X_RAPIDAPI_URL3;
 
 const GetData2 = () => {
-    const seasonsGPT = ["2023","2022","2021","2020"];
+    const seasonsGPT = ["2023"];
     const [loadingAllData, setLoadingAllData] = useState(true);
     const [allPlayerData2, setAllPlayerData2] = useState([]);
     const ids = Array.from(new Set(idsData))
+    console.log("testing", ids.length)
 
     useEffect(() => {
         const fetchPlayerStats = async () => {
